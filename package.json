@@ -1,0 +1,30 @@
+{
+  "name": "koa-app",
+  "version": "1.0.0",
+  "description": "koa 实战",
+  "main": "app/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app/index.js",
+    "commit": "git add . && git-cz"
+  },
+  "keywords": [
+    "koa",
+    "api",
+    "node"
+  ],
+  "author": "xn213",
+  "license": "ISC",
+  "dependencies": {
+    "koa": "^2.13.1"
+  },
+  "devDependencies": {
+    "commitizen": "^4.2.4",
+    "nodemon": "^2.0.7"
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-conventional-changelog"
+    }
+  }
+}
