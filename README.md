@@ -59,3 +59,13 @@ git push gitee
 	url = git@gitee.com:xn213/koa-app.git
 	fetch = +refs/heads/*:refs/remotes/origin/*
 ```
+gp >> git push 会提示如下图
+
+![2021_06_06_git-push-to-both-github-gitee](https://cdn.jsdelivr.net/gh/xn213/img-hosting@master/code-tools/2021_06_06_git-push-to-both-github-gitee.4amz23xmcgc0.png)
+
+上图会在 config 中添加如下字段
+```sh
+[branch "master"]
+	remote = origin
+	merge = refs/heads/master
+```
