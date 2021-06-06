@@ -80,6 +80,7 @@ git push --set-upstream origin master
 
 ```sh
 yarn add koa-router -S
+
 cd app
 mkdir router
 touch index.js
@@ -88,25 +89,13 @@ touch routes.js
 
 ## 4. 参数解析，抽离中间件
 
-```js
-// controllers/test.js
-ctx.body = ctx.request.body
-```
-这里 post 请求 拿不到 body 的参数，找轮子>插件
+## 4.1 koa-compose 简化中间件引用
 
 ```sh
 yarn add koa-compose koa-bodyparser -S
 # 插件 koa-compose 简化引用中间件的写法。
 # 插件 koa-bodyparser 处理 post 请求体中的参数
 ```
-
-```sh
-// >app
-mkdir middlewares
-touch index.js
-```
-
-![koa-middlewares-bodyparser](https://cdn.jsdelivr.net/gh/xn213/img-hosting@master/koa/koa-middlewares-bodyparser.png)
 
 ```js
 // app/index.js
@@ -117,5 +106,21 @@ const app = new Koa()
 
 app.use(compose(MD))
 ```
+
+```js
+// controllers/test.js
+ctx.body = ctx.request.body
+```
+这里 post 请求 拿不到 body 的参数，找轮子>插件
+
+```sh
+// >app
+mkdir middlewares
+touch index.js
+
+# 注意： koa-bodyparser 处理需放在路由前面
+```
+
+![koa-middleware-bodyparser](https://cdn.jsdelivr.net/gh/xn213/img-hosting@master/koa/koa-middleware-bodyparser.png)
 
 ![post-body](https://cdn.jsdelivr.net/gh/xn213/img-hosting@master/koa/post-body.png)
