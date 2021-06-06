@@ -5,7 +5,12 @@ const routes = [
     // 测试
     method: 'get',
     path: '/a',
-    controller: test.list
+    controller: test.getList
+  },
+  {
+    method: 'post',
+    path: '/post',
+    controller: test.postList
   }
 ]
 
