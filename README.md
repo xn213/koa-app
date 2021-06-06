@@ -76,4 +76,12 @@ git push --set-upstream origin master
 
 ## 3. 改造路由
 
+### 3.1 抽离路由模块
 
+```sh
+yarn add koa-router -S
+cd app
+mkdir router
+touch index.js
+touch routes.js
+```
