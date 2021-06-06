@@ -49,7 +49,7 @@ git push github
 git push gitee
 ```
 
-升级： 同时提交到 github 和 gitee
+升级省事： **同时提交**到 github 和 gitee
 
 修改 .git/config
 
