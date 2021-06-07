@@ -16,6 +16,7 @@
   "author": "xn213",
   "license": "ISC",
   "dependencies": {
+    "formidable": "^1.2.2",
     "koa": "^2.13.1",
     "koa-bodyparser": "^4.3.0",
     "koa-compose": "^4.1.0",

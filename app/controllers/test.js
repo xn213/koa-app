@@ -3,12 +3,13 @@ const getList = async ctx => {
 }
 
 const postList = async ctx => {
-  const { method, url, body } = ctx.request
-  ctx.body = {
-    method,
-    url,
-    body
-  }
+  // const { method, url, body } = ctx.request
+  // ctx.body = {
+  //   method,
+  //   url,
+  //   body
+  // }
+  ctx.body = ctx.request.files
 }
 
 module.exports = {
