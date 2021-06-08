@@ -256,3 +256,124 @@ app.context.utils = config
 app.context.utils = utils
 ...
 ```
+
+## 6. 统一返回格式 & 错误处理
+
+### 6.1 统一 成功 or 失败 返回格式
+
+1. 成功
+
+```js
+// app/middlewares/response.js
+const response = () => {
+  return async (ctx, next) => {
+    ctx.res.fail = ({ code, data, msg }) => {
+      ctx.body = {
+        code,
+        data,
+        msg,
+      }
+    }
+    ctx.res.success = (msg) => {
+      ctx.body = {
+        code: 0,
+        data,
+        msg: msg || 'success',
+      }
+    }
+    await next()
+  }
+}
+module.exports = response
+```
+
+2. 失败
+
+```js
+// app/middlewares/error.js
+const error = () => {
+  return async (ctx, next) => {
+    try {
+      await next()
+      if (ctx.status === 200) {
+        ctx.res.success()
+      }
+    } catch (err) {
+      if (err.code) {
+        ctx.res.fail({ code: err.code, msg: err.message })
+      } else {
+        // 程序运行时错误
+        ctx.app.emit('error', err, ctx)
+      }
+    }
+  }
+}
+module.exports = error
+```
+
+3. 程序运行时错误使用 `koa` 的错误处理事件，需要在 `app/index.js` 配置
+
+所有的返回值是在 `middlewares/error.js` 里拦截了一下，如果状态码是 `200`，用成功的工具函数包装返回，如果不是则又分为两种情况：一种是我们自己抛出的，包含业务错误码的情况(这种情况我们用失败的工具函数包装返回)；另一种是程序运行时报的错，这个往往是我们代码写的有问题(这种情况我们触发 `koa` 的错误处理事件去处理)，针对失败的第二种情况，我们还需要修改启动文件 `app/index.js`，添加如下代码:
+
+```js
+app.on('error' (err, ctx) => {
+  if(ctx) {
+    ctx.body = {
+      code: 9000,
+      msg: `程序运行时错误： ${err.message}`
+    }
+  }
+})
+```
+
+4. 在 `middlewares/index.js` 中引入
+
+```js
+const response = require('./response')
+const error = require('./error')
+
+const mdResHandler = response()
+const mdErrHandler = error()
+
+module.exports = [mdFormidable, mdKoaBody, mdResHandler, mdErrHandler, mdRoute, mdRouterAllowed]
+```
+
+测试一下： 在 `controllers/test.js` 添加如下代码：
+
+1. 成功
+
+```js
+const getList = async () => {
+  ctx.body = '返回结果'
+}
+```
+
+请求接口， 返回值如下，我们定义的 `controller` 成功返回
+
+![koa-成功返回结果-controller-拦截到](https://cdn.jsdelivr.net/gh/xn213/img-hosting@master/koa/koa-成功返回结果-controller-拦截到.41wdq8ncjug0.png)
+
+2. 业务抛出错误
+
+```js
+const getList = async (ctx) => {
+  const data = ''
+  // 业务中抛出失败
+  ctx.utils.assert(data, ctx.utils.throwError(10001, '验证码失效'))
+  ctx.body = '返回结果'
+}
+```
+
+![koa-业务中抛出错误10001](https://cdn.jsdelivr.net/gh/xn213/img-hosting@master/koa/koa-业务中抛出错误10001.20xr78fw08n4.png)
+
+3. 程序本身报错
+
+这时添加一行 `a = b`, 这里 `b` 未定义，则为程序本身错误， 触发 `koa error` 事件
+
+```js
+const getList = async (ctx) => {
+  const a = b
+  ctx.body = '返回结果'
+}
+```
+
+![koa](https://cdn.jsdelivr.net/gh/xn213/img-hosting@master/koa/koa.on.error-程序运行时错误.png)

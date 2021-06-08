@@ -1,5 +1,11 @@
 const getList = async ctx => {
-  ctx.body = '路由改造后 get请求'
+  const data = ''
+  // next-line b is not defined 程序本身报错
+  // const a = b
+
+  // 业务中抛出失败
+  ctx.utils.assert(data, ctx.utils.throwError(10001, '验证码失效'))
+  ctx.body = '返回结果'
 }
 
 const postList = async ctx => {

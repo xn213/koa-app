@@ -18,6 +18,15 @@ app.context.utils = utils
 
 app.use(compose(MD))
 
+app.on('error', (err, ctx) => {
+  if(ctx) {
+    ctx.body = {
+      code: 9999,
+      message: `程序运行时错误： ${err.message}`
+    }
+  }
+})
+
 app.listen(port, host, () => {
   console.log(`API server listening on ${host}:${port}`)
 })
