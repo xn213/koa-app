@@ -189,6 +189,7 @@ module.exports = [
 ![koa-9000-upload-file-temp-folder](https://cdn.jsdelivr.net/gh/xn213/img-hosting@master/koa/koa-9000-upload-file.jpg)
 
 另： 抽离配置文件，添加配置文件目录： `app/config`
+
 ```js
 // config/index.js
 const base = require('./base')
@@ -205,5 +206,4 @@ const configMap = {
 }
 
 module.exports = Object.assign(base, configMap[env])
-
 ```
