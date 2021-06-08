@@ -25,6 +25,7 @@ yarn start ==> server on localhost:9000
 ```
 
 ## 2. 提交
+
 ### 2.1 提交规范 commitizen
 
 ```sh
@@ -35,9 +36,10 @@ add "scripts": "commit": "git add . && git-cz"
 add "config": { "commitizen": { "path": "node_modules/cz-conventional-changelog" }}
 ```
 
-### 2.2 提交到github & gitee
+### 2.2 提交到 github & gitee
 
 前提是：两个账户已分别绑定 git 权限
+
 ```sh
 git remote add github git@github.com:xn213/koa-app.git
 git remote add gitee git@gitee.com:xn213/koa-app.git
@@ -59,15 +61,19 @@ git push gitee
 	url = git@gitee.com:xn213/koa-app.git
 	fetch = +refs/heads/*:refs/remotes/origin/*
 ```
+
 这时第一次提交到 gitee, alias: gp == git push 会提示如下图,
 
 ![2021_06_06_git-push-to-both-github-gitee](https://cdn.jsdelivr.net/gh/xn213/img-hosting@master/code-tools/2021_06_06_git-push-to-both-github-gitee.4amz23xmcgc0.png)
 
 由于上面分别提交到 github 和 gitee, 设置了 git remote gitee..., 要使用如下命令提交
+
 ```sh
 git push --set-upstream origin master
 ```
+
 此命令会在 .git/config 中添加如下字段
+
 ```sh
 [branch "master"]
 	remote = origin
@@ -111,6 +117,7 @@ app.use(compose(MD))
 // controllers/test.js
 ctx.body = ctx.request.body
 ```
+
 这里 post 请求 拿不到 body 的参数，找轮子>插件
 
 ### 4.2 koa-bodyparser 处理 post 请求参数
@@ -127,15 +134,15 @@ touch index.js
 
 ![post-body](https://cdn.jsdelivr.net/gh/xn213/img-hosting@master/koa/post-body.png)
 
-
 ### 4.3 `formidable` 处理 `上传文件`
 
-`koa-bodyparser` 插件只能解析 4种数据 [ 'json', 'form', 'text', 'xml' ]，当上传文件的时候，是获取不到文件的.
+`koa-bodyparser` 插件只能解析 4 种数据 [ 'json', 'form', 'text', 'xml' ]，当上传文件的时候，是获取不到文件的.
 这里借助插件 [formidable 文档](https://www.npmjs.com/package/formidable)
 
 ```sh
 yarn add formidable -S
 ```
+
 ```js
 // middlewares/formidable.js
 const Formidable = require('formidable')
@@ -148,7 +155,7 @@ module.exports = () => {
       multiples: true,
       // 上传的临时文件保存路径 抽离到 config/base 一些配置
       // uploadDir: `${process.cwd()}/${tempFilePath}`
-      uploadDir: tempFilePath
+      uploadDir: tempFilePath,
     })
 
     await new Promise((reslove, reject) => {
@@ -167,19 +174,13 @@ module.exports = () => {
     await next()
   }
 }
-
 ```
 
 ```js
 // middlewares/index.js 中引入 注册 暴露出去
 const formidable = require('./formidable')
 const mdFormidable = formidable()
-module.exports = [
-  mdFormidable,
-  mdKoaBody,
-  mdRoute,
-  mdRouterAllowed
-]
+module.exports = [mdFormidable, mdKoaBody, mdRoute, mdRouterAllowed]
 ```
 
 注： [Koa Docs: content-type](https://koa.bootcss.com/)
@@ -189,6 +190,7 @@ module.exports = [
 ![koa-9000-upload-file-temp-folder](https://cdn.jsdelivr.net/gh/xn213/img-hosting@master/koa/koa-9000-upload-file.jpg)
 
 另： 抽离配置文件，添加配置文件目录： `app/config`
+
 ```js
 // config/index.js
 const base = require('./base')
@@ -201,9 +203,8 @@ const env = process.env.NODE_ENV || 'dev'
 const configMap = {
   dev,
   pre,
-  pro
+  pro,
 }
 
 module.exports = Object.assign(base, configMap[env])
-
 ```
