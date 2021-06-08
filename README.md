@@ -208,3 +208,49 @@ const configMap = {
 
 module.exports = Object.assign(base, configMap[env])
 ```
+
+## 5. 工具函数和常量配置抽离 挂载到上下文
+
+编写工具函数 `app/utils/index.js` & `test.js`
+```sh
+cd app
+mkdir utils
+cd utils
+touch index.js
+vi index.js i 编辑输入： :wq 保存退出
+```
+
+```js
+// utils/index.js
+const testUtils = require('./test')
+
+module.exports = {
+  testUtils
+}
+```
+
+```sh
+touch test.js
+vi test.js  i编辑输入
+```
+
+```js
+// utils/test.js
+const test = 'test utils string'
+
+module.exports = testUtils = () => {
+  return test
+}
+```
+挂载到 App context 上下文
+```js
+// app/index.js
+...
+const config = require('./config')
+const utils = require('./utils')
+
+app.context.utils = config
+app.context.utils = utils
+...
+```
+
