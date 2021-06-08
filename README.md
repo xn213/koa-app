@@ -311,22 +311,7 @@ const error = () => {
 module.exports = error
 ```
 
-3. 程序运行时错误使用 `koa` 的错误处理事件，需要在 `app/index.js` 配置
-
-所有的返回值是在 `middlewares/error.js` 里拦截了一下，如果状态码是 `200`，用成功的工具函数包装返回，如果不是则又分为两种情况：一种是我们自己抛出的，包含业务错误码的情况(这种情况我们用失败的工具函数包装返回)；另一种是程序运行时报的错，这个往往是我们代码写的有问题(这种情况我们触发 `koa` 的错误处理事件去处理)，针对失败的第二种情况，我们还需要修改启动文件 `app/index.js`，添加如下代码:
-
-```js
-app.on('error' (err, ctx) => {
-  if(ctx) {
-    ctx.body = {
-      code: 9000,
-      msg: `程序运行时错误： ${err.message}`
-    }
-  }
-})
-```
-
-4. 在 `middlewares/index.js` 中引入
+3. 在 `middlewares/index.js` 中引入
 
 ```js
 const response = require('./response')
@@ -338,11 +323,30 @@ const mdErrHandler = error()
 module.exports = [mdFormidable, mdKoaBody, mdResHandler, mdErrHandler, mdRoute, mdRouterAllowed]
 ```
 
-测试一下： 在 `controllers/test.js` 添加如下代码：
+### 6.2 错误处理
 
-1. 成功
+1. 程序运行时错误使用 `koa` 的错误处理事件，需要在 `app/index.js` 配置
+
+所有的返回值是在 `middlewares/error.js` 里拦截了一下，如果状态码是 `200`，用成功的工具函数包装返回，如果不是则又分为两种情况：一种是我们自己抛出的，包含业务错误码的情况(这种情况我们用失败的工具函数包装返回)；另一种是程序运行时报的错，这个往往是我们代码写的有问题(这种情况我们触发 `koa` 的错误处理事件去处理)，针对失败的第二种情况，我们还需要修改启动文件 `app/index.js`，添加如下代码:
 
 ```js
+// 程序本身错误
+app.on('error' (err, ctx) => {
+  if(ctx) {
+    ctx.body = {
+      code: 9000,
+      msg: `程序运行时错误： ${err.message}`
+    }
+  }
+})
+```
+
+2. 测试一下： 在 `controllers/test.js` 添加如下代码：
+
+2.1. 成功
+
+```js
+// controllers/test.js
 const getList = async () => {
   ctx.body = '返回结果'
 }
@@ -352,9 +356,10 @@ const getList = async () => {
 
 ![koa-成功返回结果-controller-拦截到](https://cdn.jsdelivr.net/gh/xn213/img-hosting@master/koa/koa-成功返回结果-controller-拦截到.41wdq8ncjug0.png)
 
-2. 业务抛出错误
+2.2. 业务抛出错误
 
 ```js
+// controllers/test.js
 const getList = async (ctx) => {
   const data = ''
   // 业务中抛出失败
@@ -365,7 +370,7 @@ const getList = async (ctx) => {
 
 ![koa-业务中抛出错误10001](https://cdn.jsdelivr.net/gh/xn213/img-hosting@master/koa/koa-业务中抛出错误10001.20xr78fw08n4.png)
 
-3. 程序本身报错
+2.3. 程序本身报错
 
 这时添加一行 `a = b`, 这里 `b` 未定义，则为程序本身错误， 触发 `koa error` 事件
 
