@@ -1,4 +1,12 @@
 const koaBody = require('koa-bodyparser')
+const cors = require('@koa/cors')
+
+// 跨域处理 @koa/cors
+const mdCors = cors({
+  origin: '*',
+  credentials: true,
+  allowMethods: ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'PATCH']
+})
 
 const router = require('../router')
 const formidable = require('./formidable')
@@ -26,6 +34,7 @@ const mdRouterAllowed = router.allowedMethods()
 module.exports = [
   mdFormidable,
   mdKoaBody,
+  mdCors,
   mdResHandler,
   mdErrHandler,
   mdRoute,

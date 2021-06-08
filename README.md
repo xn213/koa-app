@@ -382,3 +382,29 @@ const getList = async (ctx) => {
 ```
 
 ![koa](https://cdn.jsdelivr.net/gh/xn213/img-hosting@master/koa/koa.on.error-程序运行时错误.png)
+
+## 7. 跨域处理 `@koa/cors`
+
+直接用插件 [@koa/cors](https://github.com/koajs/cors) [npm/@koa/cors](https://www.npmjs.com/package/@koa/cors)
+
+`app/middlewares/index.js` 中引入，实例化，导出
+
+```js
+// middlewares/index.js 跨域处理
+const cors = require('@koa/cors')
+const mdCors = cors({
+  origin: '*',
+  credentials: true,
+  allowMethods: [ 'GET', 'HEAD', 'PUT', 'POST', 'DELETE', 'PATCH' ]
+})
+
+module.exports = [
+  mdFormidable,
+  mdKoaBody,
+  mdCors,
+  mdResHandler,
+  mdErrorHandler,
+  mdRoute,
+  mdRouterAllowed
+]
+```
