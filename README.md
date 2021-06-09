@@ -395,7 +395,7 @@ const cors = require('@koa/cors')
 const mdCors = cors({
   origin: '*',
   credentials: true,
-  allowMethods: [ 'GET', 'HEAD', 'PUT', 'POST', 'DELETE', 'PATCH' ]
+  allowMethods: ['GET', 'HEAD', 'PUT', 'POST', 'DELETE', 'PATCH'],
 })
 
 module.exports = [
@@ -404,6 +404,80 @@ module.exports = [
   mdCors,
   mdResHandler,
   mdErrorHandler,
+  mdRoute,
+  mdRouterAllowed,
+]
+```
+
+## 8. 添加日志 `log4js`
+
+插件：[log4js](https://www.npmjs.com/package/log4js)
+
+```js
+// middlewares/log.js
+const log4js = require('log4js')
+const { flag, level, outDir } = require('../config').logConfig
+
+log4js.configure({
+  appenders: {
+    cheese: {
+      type: 'file',
+      filename: `${outDir}/receive.log`,
+    },
+  },
+  categories: {
+    default: {
+      appenders: ['cheese'],
+      level: 'info',
+    },
+  },
+  pm2: true,
+})
+
+const logger = log4js.getLogger()
+logger.level = level
+
+module.exports = () => {
+  return async (ctx, next) => {
+    const { method, path, origin, query, body, headers, ip } = ctx.request
+    const data = {
+      method,
+      path,
+      origin,
+      query,
+      body,
+      ip,
+      headers,
+    }
+    await next()
+    if (flag) {
+      const { status, params } = ctx
+      data.status = status
+      data.params = params
+      data.result = ctx.body || 'no content'
+      if (ctx.body.code !== 0) {
+        logger.error(JSON.stringify(data))
+      } else {
+        logger.info(JSON.stringify(data))
+      }
+    }
+  }
+}
+```
+
+`app/middlewares/index.js` 引入/注册/配置
+
+```js
+const log = require('./log')
+const mdLogger = log()
+
+module.exports = [
+  mdFormidable,
+  mdKoaBody,
+  mdCors,
+  mdLogger,
+  mdResHandler,
+  mdErrHandler,
   mdRoute,
   mdRouterAllowed
 ]

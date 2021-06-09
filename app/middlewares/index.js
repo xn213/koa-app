@@ -12,6 +12,7 @@ const router = require('../router')
 const formidable = require('./formidable')
 const response = require('./response')
 const error = require('./error')
+const log = require('./log')
 
 const mdFormidable = formidable()
 // 参数解析 koajs/bodyparser
@@ -26,6 +27,7 @@ const mdKoaBody = koaBody({
 
 const mdResHandler = response()
 const mdErrHandler = error()
+const mdLogger = log()
 
 // 路由处理
 const mdRoute = router.routes()
@@ -35,6 +37,7 @@ module.exports = [
   mdFormidable,
   mdKoaBody,
   mdCors,
+  mdLogger,
   mdResHandler,
   mdErrHandler,
   mdRoute,
